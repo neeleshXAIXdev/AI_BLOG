@@ -5,10 +5,14 @@ exports.createBlog = async (req, res) => {
   try {
     let { title, content, tags } = req.body;
     if (!title || !content || !tags) {
-      return res.status(401).json({ message: "All fields are require" });
+      return res.status(400).json({ message: "All fields are require" });
     }
     if (tags) {
-      tags = JSON.parse(tags);
+      try {
+        tags = typeof tags === "string" ? JSON.parse(tags) : tags;
+      } catch (err) {
+        return res.status(400).json({ message: "Invalid tags format" });
+      }
     }
     const blog = await Blog.create({
       title,

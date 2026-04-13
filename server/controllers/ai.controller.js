@@ -2,6 +2,8 @@ const { generateBlog } = require("../services/ai.services");
 
 exports.generateAIContent = async (req, res) => {
   try {
+    console.log("BODY:", req.body);
+
     const { topic } = req.body;
 
     if (!topic) {
@@ -12,11 +14,9 @@ exports.generateAIContent = async (req, res) => {
 
     res.status(200).json({ content });
   } catch (error) {
-    console.error("🔥 FULL AI ERROR:", error);
-    console.error("🔥 MESSAGE:", error.message);
-
+    console.log("🔥 FULL ERROR:", error); // 👈 IMPORTANT
     res.status(500).json({
-      message: error.message, // 👈 show actual error
+      message: error.message,
     });
   }
 };

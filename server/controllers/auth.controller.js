@@ -15,7 +15,11 @@ const registerUser = async (req, res) => {
     // Check user exists
     const userExists = await User.findOne({ email });
     if (userExists) {
-      res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
     }
 
     // Hash password
@@ -46,7 +50,7 @@ const loginUser = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
     // Compare password

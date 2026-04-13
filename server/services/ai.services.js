@@ -1,13 +1,12 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const Groq = require("groq-sdk");
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
+});
 
 exports.generateBlog = async (topic) => {
-  const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
-  });
-
-  const prompt = `
+  try {
+    const prompt = `
 Write a professional blog on: ${topic}
 
 Requirements:
@@ -18,10 +17,19 @@ Requirements:
 - Conclusion at end
 `;
 
-  const result = await model.generateContent(prompt);
+    const completion = await groq.chat.completions.create({
+      model: "llama-3.1-8b-instant",
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+    });
 
-  const response = await result.response;
-  const text = response.text();
-
-  return text;
+    return completion.choices[0].message.content;
+  } catch (error) {
+    console.log("🔥 Groq Error:", error);
+    throw new Error("AI generation failed");
+  }
 };
